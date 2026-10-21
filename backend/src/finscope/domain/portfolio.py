@@ -1,0 +1,42 @@
+from dataclasses import dataclass
+from decimal import Decimal
+
+from finscope.domain.portfolio_allocation import PortfolioAllocation
+
+
+@dataclass(frozen=True)
+class Portfolio:
+    id: str
+    initial_capital: Decimal
+    allocations: tuple[PortfolioAllocation, ...]
+    base_currency: str = "USD"
+    strategy: str = "buy_and_hold"
+
+    def __post_init__(self) -> None:
+        if self.initial_capital <= Decimal("0"):
+            raise ValueError("initial_capital must be positive")
+
+        if not self.allocations:
+            raise ValueError("portfolio must have allocations")
+
+        instruments = [
+            allocation.instrument
+            for allocation in self.allocations
+        ]
+
+        if len(instruments) != len(set(instruments)):
+            raise ValueError("duplicate instrument allocations")
+
+        total_weight = sum(
+            (allocation.weight for allocation in self.allocations),
+            start=Decimal("0"),
+        )
+
+        if abs(total_weight - Decimal("1")) > Decimal("0.000001"):
+            raise ValueError("allocation weights must sum to 1")
+
+        if self.base_currency != "USD":
+            raise ValueError("MVP supports USD portfolios only")
+
+        if self.strategy != "buy_and_hold":
+            raise ValueError("unsupported portfolio strategy")
