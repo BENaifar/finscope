@@ -6,7 +6,6 @@ from typing import Any
 import pytest
 
 from src.finscope.analytics.models.performance_result import PerformanceResult
-from src.finscope.domain.experiment_config import ExperimentConfig
 from src.finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
 from tests.fixtures.factories import (
     jan,
@@ -135,20 +134,10 @@ def test_accepts_valid_status_result_error_combinations(
             {
                 "status": ExperimentStatus.COMPLETED,
                 "result": make_performance_result(),
-                "started_at": datetime(2024, 2, 1, 9, 1),
-                "finished_at": datetime(2024, 2, 1, 9, 1),
-            },
-            "started_at must be before finished_at",
-            id="started-at-equals-finished-at",
-        ),
-        pytest.param(
-            {
-                "status": ExperimentStatus.COMPLETED,
-                "result": make_performance_result(),
                 "started_at": datetime(2024, 2, 1, 9, 2),
                 "finished_at": datetime(2024, 2, 1, 9, 1),
             },
-            "started_at must be before finished_at",
+            "started_at must not be after finished_at",
             id="started-at-after-finished-at",
         ),
     ],
@@ -159,6 +148,21 @@ def test_rejects_invalid_timestamp_order(
 ) -> None:
     with pytest.raises(ValueError, match=re.escape(message)):
         make_experiment_run(**overrides)
+
+def test_accepts_finish_time_equal_to_start_time(
+    performance_result: PerformanceResult,
+) -> None:
+    moment = datetime(2024, 2, 1, 9, 1)
+
+    run = make_experiment_run(
+        status=ExperimentStatus.COMPLETED,
+        result=performance_result,
+        started_at=moment,
+        finished_at=moment,
+    )
+
+    assert run.started_at == moment
+    assert run.finished_at == moment
 
 
 @pytest.mark.parametrize(
@@ -379,3 +383,24 @@ def test_run_is_immutable() -> None:
 
     with pytest.raises(FrozenInstanceError):
         setattr(run, "status", ExperimentStatus.RUNNING)
+
+# constructor file
+@pytest.mark.parametrize(
+    "invalid_error_message",
+    [
+        pytest.param(123, id="integer"),
+        pytest.param(["boom"], id="list"),
+    ],
+)
+def test_rejects_non_string_error_message(invalid_error_message: Any) -> None:
+    with pytest.raises(
+        TypeError,
+        match=re.escape("error_message must be a string or None"),
+    ):
+        make_experiment_run(
+            status=ExperimentStatus.FAILED,
+            error_message=invalid_error_message,
+            started_at=datetime(2024, 2, 1, 9, 1),
+            finished_at=datetime(2024, 2, 1, 9, 5),
+        )
+
