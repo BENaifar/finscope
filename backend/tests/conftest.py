@@ -1,0 +1,49 @@
+import pytest
+
+from src.finscope.analytics.services.portfolio_valuation_service import (
+    PortfolioValuationService,
+)
+from src.finscope.domain.experiment_config import ExperimentConfig
+from src.finscope.domain.instrument import Instrument
+from src.finscope.domain.portfolio import Portfolio
+from tests.fixtures.factories import (
+    jan,
+    make_config,
+    make_instrument,
+    make_portfolio,
+)
+
+
+@pytest.fixture
+def valuation_service() -> PortfolioValuationService:
+    return PortfolioValuationService()
+
+
+@pytest.fixture
+def instrument_a() -> Instrument:
+    return make_instrument("inst-a")
+
+
+@pytest.fixture
+def instrument_b() -> Instrument:
+    return make_instrument("inst-b")
+
+
+@pytest.fixture
+def default_config() -> ExperimentConfig:
+    return make_config(jan(1), jan(31))
+
+
+@pytest.fixture
+def single_asset_portfolio(instrument_a: Instrument) -> Portfolio:
+    return make_portfolio(((instrument_a, "1.0"),))
+
+
+@pytest.fixture
+def two_asset_portfolio(
+    instrument_a: Instrument,
+    instrument_b: Instrument,
+) -> Portfolio:
+    return make_portfolio(
+        ((instrument_a, "0.6"), (instrument_b, "0.4")),
+    )
