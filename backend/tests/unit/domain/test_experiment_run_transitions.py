@@ -15,6 +15,14 @@ from tests.fixtures.factories import (
     ts,
 )
 
+def test_start_rejects_start_time_before_creation() -> None:
+    run = make_experiment_run()
+
+    with pytest.raises(
+        ValueError,
+        match="created_at must be before started_at",
+    ):
+        run.start(ts(0))
 
 def test_complete_returns_completed_run_with_result_and_finish_time(
     running_run: ExperimentRun,
