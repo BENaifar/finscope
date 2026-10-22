@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from decimal import Decimal
 
 from src.finscope.domain.instrument import Instrument
-from finscope.domain.portfolio_allocation import PortfolioAllocation
+from src.finscope.domain.portfolio_allocation import PortfolioAllocation
 
 
 @dataclass(frozen=True)
