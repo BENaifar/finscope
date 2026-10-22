@@ -41,6 +41,16 @@ class ExperimentRun:
         if self.finished_at is not None and not isinstance(self.finished_at, datetime):
             raise TypeError("finished_at must be a datetime or None")
 
+        if self.started_at is not None and self.created_at >= self.started_at:
+            raise ValueError("created_at must be before started_at")
+
+        if (
+            self.started_at is not None
+            and self.finished_at is not None
+            and self.started_at >= self.finished_at
+        ):
+            raise ValueError("started_at must be before finished_at")
+
         if not isinstance(self.status, ExperimentStatus):
             raise TypeError("status must be an ExperimentStatus")
 
