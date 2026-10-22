@@ -124,3 +124,53 @@ def make_experiment_run(**overrides: Any) -> ExperimentRun:
     }
     values.update(overrides)
     return ExperimentRun(**values)
+
+
+def ts(minute: int) -> datetime:
+    return datetime(2024, 2, 1, 9, minute)
+
+
+def make_pending_run() -> ExperimentRun:
+    return ExperimentRun(
+        id="run-1",
+        config=make_config(jan(1), jan(31)),
+        created_at=ts(0),
+        started_at=None,
+        finished_at=None,
+        status=ExperimentStatus.PENDING,
+    )
+
+
+def make_running_run() -> ExperimentRun:
+    return ExperimentRun(
+        id="run-1",
+        config=make_config(jan(1), jan(31)),
+        created_at=ts(0),
+        started_at=ts(1),
+        finished_at=None,
+        status=ExperimentStatus.RUNNING,
+    )
+
+
+def make_completed_run() -> ExperimentRun:
+    return ExperimentRun(
+        id="run-1",
+        config=make_config(jan(1), jan(31)),
+        created_at=ts(0),
+        started_at=ts(1),
+        finished_at=ts(5),
+        status=ExperimentStatus.COMPLETED,
+        result=make_performance_result(),
+    )
+
+
+def make_failed_run() -> ExperimentRun:
+    return ExperimentRun(
+        id="run-1",
+        config=make_config(jan(1), jan(31)),
+        created_at=ts(0),
+        started_at=ts(1),
+        finished_at=ts(5),
+        status=ExperimentStatus.FAILED,
+        error_message="boom",
+    )
