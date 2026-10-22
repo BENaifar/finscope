@@ -77,6 +77,11 @@ def analysis_engine() -> PortfolioAnalysisEngine:
 
 
 @pytest.fixture
+def analysis_engine_spy() -> Any:
+    return create_autospec(PortfolioAnalysisEngine, instance=True)
+
+
+@pytest.fixture
 def performance_result() -> PerformanceResult:
     return make_performance_result()
 
