@@ -1,13 +1,13 @@
-from backend.src.finscope.analytics.models.performance_result import PerformanceResult
-from backend.src.finscope.analytics.services.performance_calculation_service import (
+from src.finscope.analytics.models.performance_result import PerformanceResult
+from src.finscope.analytics.services.performance_calculation_service import (
     PerformanceCalculationService,
 )
-from backend.src.finscope.analytics.services.portfolio_valuation_service import (
+from src.finscope.analytics.services.portfolio_valuation_service import (
     PortfolioValuationService,
 )
-from backend.src.finscope.domain.experiment_config import ExperimentConfig
-from backend.src.finscope.domain.portfolio import Portfolio
-from backend.src.finscope.market_data.models.price_series import PriceSeries
+from src.finscope.domain.experiment_config import ExperimentConfig
+from src.finscope.domain.portfolio import Portfolio
+from src.finscope.market_data.models.price_series import PriceSeries
 
 
 class PortfolioAnalysisEngine:
