@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
+from backend.src.finscope.domain.instrument import Instrument
 from finscope.domain.portfolio_allocation import PortfolioAllocation
 
 
@@ -40,3 +41,19 @@ class Portfolio:
 
         if self.strategy != "buy_and_hold":
             raise ValueError("unsupported portfolio strategy")
+
+    @property
+    def instruments(self) -> tuple[Instrument, ...]:
+        return tuple(
+            allocation.instrument
+            for allocation in self.allocations
+        )
+
+    def get_weight(self, instrument_id: str) -> Decimal:
+        for allocation in self.allocations:
+            if allocation.instrument.id == instrument_id:
+                return allocation.weight
+
+        raise ValueError(
+            f"Instrument {instrument_id} is not in portfolio {self.id}"
+        )
