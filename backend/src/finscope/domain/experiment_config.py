@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from datetime import date
 
-from backend.src.finscope.domain.portfolio import Portfolio
-
 
 @dataclass(frozen=True)
 class ExperimentConfig:
