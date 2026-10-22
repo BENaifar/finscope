@@ -1,8 +1,8 @@
 from dataclasses import dataclass
 from datetime import date
 
-from backend.src.finscope.analytics.models.performance_metrics import PerformanceMetrics
-from backend.src.finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
+from src.finscope.analytics.models.performance_metrics import PerformanceMetrics
+from src.finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
 
 
 @dataclass(frozen=True)
