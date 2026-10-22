@@ -1,11 +1,13 @@
 from collections.abc import Mapping, Sequence
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Any
 
 from src.finscope.analytics.models.performance_metrics import PerformanceMetrics
+from src.finscope.analytics.models.performance_result import PerformanceResult
 from src.finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
 from src.finscope.domain.experiment_config import ExperimentConfig
+from src.finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
 from src.finscope.domain.instrument import Instrument
 from src.finscope.domain.portfolio import Portfolio
 from src.finscope.domain.portfolio_allocation import PortfolioAllocation
@@ -97,3 +99,28 @@ def make_performance_metrics(**overrides: Any) -> PerformanceMetrics:
     }
     values.update(overrides)
     return PerformanceMetrics(**values)
+
+
+def make_performance_result() -> PerformanceResult:
+    value_points = make_value_points("1000", "1100")
+    return PerformanceResult(
+        value_points=value_points,
+        metrics=make_performance_metrics(),
+        from_date=value_points[0].valuation_date,
+        to_date=value_points[-1].valuation_date,
+    )
+
+
+def make_experiment_run(**overrides: Any) -> ExperimentRun:
+    values: dict[str, Any] = {
+        "id": "run-1",
+        "config": make_config(jan(1), jan(31)),
+        "created_at": datetime(2024, 2, 1, 9, 0),
+        "started_at": None,
+        "finished_at": None,
+        "status": ExperimentStatus.PENDING,
+        "result": None,
+        "error_message": None,
+    }
+    values.update(overrides)
+    return ExperimentRun(**values)
