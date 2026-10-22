@@ -22,6 +22,7 @@ from tests.fixtures.factories import (
     make_instrument,
     make_performance_result,
     make_portfolio,
+    make_running_run,
 )
 
 
@@ -78,3 +79,8 @@ def analysis_engine() -> PortfolioAnalysisEngine:
 @pytest.fixture
 def performance_result() -> PerformanceResult:
     return make_performance_result()
+
+
+@pytest.fixture
+def running_run():
+    return make_running_run()
