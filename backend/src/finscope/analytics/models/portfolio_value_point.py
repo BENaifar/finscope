@@ -13,7 +13,7 @@ class PortfolioValuePoint:
             raise TypeError("valuation_date must be a date")
         if self.valuation_date >= date.today():
             raise ValueError("valuation_date must be in the past")
-        if not isinstance(self.total_value, float):
-            raise TypeError("total_value must be a float")
+        if not isinstance(self.total_value, Decimal):
+            raise TypeError("total_value must be a decimal")
         if self.currency != "USD":
             raise ValueError("Only USD is implemented in this version of the app")
