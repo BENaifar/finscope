@@ -1,5 +1,14 @@
+from typing import Any
+from unittest.mock import create_autospec
+
 import pytest
 
+from src.finscope.analytics.services.performance_calculation_service import (
+    PerformanceCalculationService,
+)
+from src.finscope.analytics.services.portfolio_analysis_engine import (
+    PortfolioAnalysisEngine,
+)
 from src.finscope.analytics.services.portfolio_valuation_service import (
     PortfolioValuationService,
 )
@@ -47,3 +56,18 @@ def two_asset_portfolio(
     return make_portfolio(
         ((instrument_a, "0.6"), (instrument_b, "0.4")),
     )
+
+
+@pytest.fixture
+def valuation_spy() -> Any:
+    return create_autospec(PortfolioValuationService, instance=True)
+
+
+@pytest.fixture
+def performance_spy() -> Any:
+    return create_autospec(PerformanceCalculationService, instance=True)
+
+
+@pytest.fixture
+def analysis_engine() -> PortfolioAnalysisEngine:
+    return PortfolioAnalysisEngine()
