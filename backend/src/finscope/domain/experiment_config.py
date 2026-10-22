@@ -6,13 +6,13 @@ from backend.src.finscope.domain.portfolio import Portfolio
 
 @dataclass(frozen=True)
 class ExperimentConfig:
-    portfolio: Portfolio
+    portfolio_id: str
     start_date: date
     end_date: date
     price_convention: str = "adjusted_close"
 
     def __post_init__(self) -> None:
-        if not self.portfolio:
+        if not self.portfolio_id:
             raise ValueError("portfolio cannot be empty")
 
         if self.start_date >= self.end_date:
