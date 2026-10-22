@@ -1,13 +1,11 @@
 from dataclasses import dataclass
 from datetime import date
-
-from backend.src.finscope.domain.portfolio import Portfolio
-
+from decimal import Decimal
 
 @dataclass(frozen=True)
 class PortfolioValuePoint:
     valuation_date: date
-    total_value: float
+    total_value: Decimal
     currency: str = "USD"
 
     def __post_init__(self):
