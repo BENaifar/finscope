@@ -1,7 +1,10 @@
 from collections.abc import Mapping, Sequence
 from datetime import date
 from decimal import Decimal
+from typing import Any
 
+from src.finscope.analytics.models.performance_metrics import PerformanceMetrics
+from src.finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
 from src.finscope.domain.experiment_config import ExperimentConfig
 from src.finscope.domain.instrument import Instrument
 from src.finscope.domain.portfolio import Portfolio
@@ -66,3 +69,31 @@ def make_price_series(
             for price_date, price in sorted(prices.items())
         ),
     )
+
+
+def make_value_points(*values: str) -> tuple[PortfolioValuePoint, ...]:
+    return tuple(
+        PortfolioValuePoint(
+            valuation_date=jan(day),
+            total_value=Decimal(value),
+        )
+        for day, value in enumerate(values, start=1)
+    )
+
+
+def make_performance_metrics(**overrides: Any) -> PerformanceMetrics:
+    values: dict[str, Any] = {
+        "initial_value": 1000.0,
+        "final_value": 1000.0,
+        "pnl": 0.0,
+        "total_return": 0.0,
+        "maximum_drawdown": 0.0,
+        "maximum_drawdown_peak_date": jan(1),
+        "maximum_drawdown_trough_date": jan(1),
+        "best_daily_return": 0.0,
+        "best_daily_return_date": jan(2),
+        "highest_portfolio_value_date": jan(1),
+        "lowest_portfolio_value_date": jan(1),
+    }
+    values.update(overrides)
+    return PerformanceMetrics(**values)
