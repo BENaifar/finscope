@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
 
@@ -6,7 +6,7 @@ from decimal import Decimal
 class PortfolioValuePoint:
     valuation_date: date
     total_value: Decimal
-    currency: str = "USD"
+    currency: str = field(default="USD")
 
     def __post_init__(self):
         if type(self.valuation_date) is not date:
