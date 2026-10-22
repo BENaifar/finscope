@@ -111,6 +111,57 @@ def test_accepts_valid_status_result_error_combinations(
 
 
 @pytest.mark.parametrize(
+    ("overrides", "message"),
+    [
+        pytest.param(
+            {
+                "status": ExperimentStatus.RUNNING,
+                "created_at": datetime(2024, 2, 1, 9, 0),
+                "started_at": datetime(2024, 2, 1, 9, 0),
+            },
+            "created_at must be before started_at",
+            id="created-at-equals-started-at",
+        ),
+        pytest.param(
+            {
+                "status": ExperimentStatus.RUNNING,
+                "created_at": datetime(2024, 2, 1, 9, 0),
+                "started_at": datetime(2024, 2, 1, 8, 59),
+            },
+            "created_at must be before started_at",
+            id="created-at-after-started-at",
+        ),
+        pytest.param(
+            {
+                "status": ExperimentStatus.COMPLETED,
+                "result": make_performance_result(),
+                "started_at": datetime(2024, 2, 1, 9, 1),
+                "finished_at": datetime(2024, 2, 1, 9, 1),
+            },
+            "started_at must be before finished_at",
+            id="started-at-equals-finished-at",
+        ),
+        pytest.param(
+            {
+                "status": ExperimentStatus.COMPLETED,
+                "result": make_performance_result(),
+                "started_at": datetime(2024, 2, 1, 9, 2),
+                "finished_at": datetime(2024, 2, 1, 9, 1),
+            },
+            "started_at must be before finished_at",
+            id="started-at-after-finished-at",
+        ),
+    ],
+)
+def test_rejects_invalid_timestamp_order(
+    overrides: dict[str, Any],
+    message: str,
+) -> None:
+    with pytest.raises(ValueError, match=re.escape(message)):
+        make_experiment_run(**overrides)
+
+
+@pytest.mark.parametrize(
     "invalid_id",
     [
         pytest.param("", id="empty"),
