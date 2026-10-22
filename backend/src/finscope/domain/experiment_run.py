@@ -47,9 +47,9 @@ class ExperimentRun:
         if (
             self.started_at is not None
             and self.finished_at is not None
-            and self.started_at >= self.finished_at
+            and self.started_at > self.finished_at
         ):
-            raise ValueError("started_at must be before finished_at")
+            raise ValueError("started_at must not be after finished_at")
 
         if not isinstance(self.status, ExperimentStatus):
             raise TypeError("status must be an ExperimentStatus")
@@ -70,8 +70,11 @@ class ExperimentRun:
         ):
             raise TypeError("result must be a PerformanceResult or None")
 
-        if self.error_message is not None and not self.error_message.strip():
-            raise ValueError("error_message must be non-empty when provided")
+        if self.error_message is not None:
+            if not isinstance(self.error_message, str):
+                raise TypeError("error_message must be a string or None")
+            if not self.error_message.strip():
+                raise ValueError("error_message must be non-empty when provided")
 
         if self.status == ExperimentStatus.COMPLETED and self.result is None:
             raise ValueError("a completed run must have a result")
@@ -84,3 +87,46 @@ class ExperimentRun:
 
         if self.status != ExperimentStatus.FAILED and self.error_message is not None:
             raise ValueError("only a failed run can have an error message")
+
+    def start(self, started_at: datetime) -> "ExperimentRun":
+        if self.status != ExperimentStatus.PENDING:
+            raise ValueError("only a pending run can be started")
+
+        return ExperimentRun(
+            id=self.id,
+            config=self.config,
+            created_at=self.created_at,
+            started_at=started_at,
+            finished_at=None,
+            status=ExperimentStatus.RUNNING,
+        )
+
+    def complete(self, finished_at: datetime, result: PerformanceResult) -> "ExperimentRun":
+        if self.status != ExperimentStatus.RUNNING:
+            raise ValueError("only a running run can be completed")
+
+        return ExperimentRun(
+            id=self.id,
+            config=self.config,
+            created_at=self.created_at,
+            started_at=self.started_at,
+            finished_at=finished_at,
+            result=result,
+            status=ExperimentStatus.COMPLETED,
+        )
+    
+    def fail(self, finished_at: datetime, error_message: str) -> "ExperimentRun":
+        if self.status != ExperimentStatus.RUNNING:
+            raise ValueError("only a running run can be failed")
+
+        return ExperimentRun(
+            id=self.id,
+            config=self.config,
+            created_at=self.created_at,
+            started_at=self.started_at,
+            finished_at=finished_at,
+            error_message=error_message,
+            status=ExperimentStatus.FAILED,
+        )
+
+    
