@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal
 
 from src.finscope.domain.instrument import Instrument
@@ -10,8 +10,8 @@ class Portfolio:
     id: str
     initial_capital: Decimal
     allocations: tuple[PortfolioAllocation, ...]
-    base_currency: str = "USD"
-    strategy: str = "buy_and_hold"
+    base_currency: str = field(default="USD")
+    strategy: str = field(default="buy_and_hold")
 
     def __post_init__(self) -> None:
         if self.initial_capital <= Decimal("0"):

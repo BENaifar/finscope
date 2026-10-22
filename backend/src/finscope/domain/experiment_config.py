@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from datetime import date
 
 
@@ -7,7 +7,7 @@ class ExperimentConfig:
     portfolio_id: str
     start_date: date
     end_date: date
-    price_convention: str = "adjusted_close"
+    price_convention: str = field(default="adjusted_close")
 
     def __post_init__(self) -> None:
         if not self.portfolio_id:

@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass(frozen=True)
@@ -6,4 +6,4 @@ class Instrument:
     id: str
     symbol: str
     name: str
-    currency: str = "USD"
+    currency: str = field(default="USD")
