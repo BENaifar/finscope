@@ -3,6 +3,7 @@ from unittest.mock import create_autospec
 
 import pytest
 
+from src.finscope.analytics.models.performance_result import PerformanceResult
 from src.finscope.analytics.services.performance_calculation_service import (
     PerformanceCalculationService,
 )
@@ -19,6 +20,7 @@ from tests.fixtures.factories import (
     jan,
     make_config,
     make_instrument,
+    make_performance_result,
     make_portfolio,
 )
 
@@ -71,3 +73,8 @@ def performance_spy() -> Any:
 @pytest.fixture
 def analysis_engine() -> PortfolioAnalysisEngine:
     return PortfolioAnalysisEngine()
+
+
+@pytest.fixture
+def performance_result() -> PerformanceResult:
+    return make_performance_result()
