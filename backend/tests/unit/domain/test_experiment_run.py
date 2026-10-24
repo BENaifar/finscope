@@ -199,6 +199,43 @@ def test_rejects_invalid_created_at_type(invalid_created_at: Any) -> None:
 
 
 @pytest.mark.parametrize(
+    ("field_name", "message"),
+    [
+        pytest.param(
+            "created_at",
+            "created_at must be timezone-aware",
+            id="created_at",
+        ),
+        pytest.param(
+            "started_at",
+            "started_at must be timezone-aware",
+            id="started_at",
+        ),
+        pytest.param(
+            "finished_at",
+            "finished_at must be timezone-aware",
+            id="finished_at",
+        ),
+    ],
+)
+def test_rejects_naive_datetime(
+    field_name: str,
+    message: str,
+    performance_result: PerformanceResult,
+) -> None:
+    overrides: dict[str, Any] = {
+        "status": ExperimentStatus.COMPLETED,
+        "result": performance_result,
+        "started_at": datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+        "finished_at": datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
+    }
+    overrides[field_name] = datetime(2024, 2, 1, 9, 1)
+
+    with pytest.raises(ValueError, match=re.escape(message)):
+        make_experiment_run(**overrides)
+
+
+@pytest.mark.parametrize(
     ("invalid_status", "started_at", "finished_at"),
     [
         pytest.param("pending", None, None, id="bare-string"),

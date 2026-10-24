@@ -90,6 +90,12 @@ def test_complete_rejects_runs_that_are_not_running(
             id="before-start",
         ),
         pytest.param(
+            datetime(2024, 2, 1, 9, 1),
+            ValueError,
+            "finished_at must be timezone-aware",
+            id="naive-datetime",
+        ),
+        pytest.param(
             None,
             ValueError,
             "a completed or failed run must have start and finish times",
@@ -202,6 +208,12 @@ def test_fail_rejects_runs_that_are_not_running(
             ValueError,
             "started_at must not be after finished_at",
             id="before-start",
+        ),
+        pytest.param(
+            datetime(2024, 2, 1, 9, 1),
+            ValueError,
+            "finished_at must be timezone-aware",
+            id="naive-datetime",
         ),
         pytest.param(
             None,
