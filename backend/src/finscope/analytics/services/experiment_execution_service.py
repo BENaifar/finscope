@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 from src.finscope.analytics.services.portfolio_analysis_engine import (
     PortfolioAnalysisEngine,
 )
-from src.finscope.domain.experiment_run import ExperimentRun
+from src.finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
 from src.finscope.domain.portfolio import Portfolio
 from src.finscope.market_data.models.price_series import PriceSeries
 
@@ -20,18 +20,44 @@ class ExperimentExecutionService:
             else PortfolioAnalysisEngine()
         )
 
+    def fail_run(
+        self,
+        running_run: ExperimentRun,
+        error_message: str,
+    ) -> ExperimentRun:
+        if running_run.status != ExperimentStatus.RUNNING:
+            raise ValueError("Only a running run can be failed")
+
+        return running_run.fail(
+            finished_at=datetime.now(timezone.utc),
+            error_message=error_message,
+        )
+
     def execute(
         self,
-        run: ExperimentRun,
+        running_run: ExperimentRun,
         portfolio: Portfolio,
         price_series: tuple[PriceSeries, ...],
     ) -> ExperimentRun:
-        if run.config.portfolio_id != portfolio.id:
+        if not isinstance(running_run, ExperimentRun):
+            raise TypeError("running_run must be an ExperimentRun")
+
+        if running_run.status != ExperimentStatus.RUNNING:
+            raise ValueError("Only a running run can be executed")
+
+        if not isinstance(portfolio, Portfolio):
+            raise TypeError("portfolio must be a Portfolio")
+
+        if running_run.config.portfolio_id != portfolio.id:
             raise ValueError(
                 "config portfolio_id must match the supplied portfolio"
             )
 
-        running_run = run.start(datetime.now(timezone.utc))
+        if not isinstance(price_series, tuple):
+            raise TypeError("price_series must be a tuple of PriceSeries")
+
+        if any(not isinstance(series, PriceSeries) for series in price_series):
+            raise TypeError("price_series must contain only PriceSeries instances")
 
         try:
             result = self._analysis_engine.analyze(
@@ -40,8 +66,8 @@ class ExperimentExecutionService:
                 price_series=price_series,
             )
         except Exception as exc:
-            return running_run.fail(
-                finished_at=datetime.now(timezone.utc),
+            return self.fail_run(
+                running_run=running_run,
                 error_message=str(exc) or type(exc).__name__,
             )
 
