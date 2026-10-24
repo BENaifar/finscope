@@ -144,6 +144,9 @@ def ts(minute: int) -> datetime:
     return datetime(2024, 2, 1, 9, minute, tzinfo=timezone.utc)
 
 
+FROZEN_NOW = datetime(2024, 3, 1, 12, 0, tzinfo=timezone.utc)
+
+
 def make_pending_run() -> ExperimentRun:
     return ExperimentRun(
         id="run-1",
