@@ -38,18 +38,25 @@ class CsvPriceHistoryProvider:
             raise PriceDataNotFoundError(instrument, start_date, end_date)
 
         points: list[PricePoint] = []
-        with path.open(newline="", encoding="utf-8") as file:
-            for line_number, row in enumerate(csv.DictReader(file), start=2):
-                try:
-                    points.append(
-                        PricePoint(
-                            date=date.fromisoformat(row["date"]),
-                            adjusted_close=Decimal(row["adjusted_close"]),
+        try:
+            with path.open(newline="", encoding="utf-8") as file:
+                for line_number, row in enumerate(csv.DictReader(file), start=2):
+                    try:
+                        points.append(
+                            PricePoint(
+                                date=date.fromisoformat(row["date"]),
+                                adjusted_close=Decimal(row["adjusted_close"]),
+                            )
                         )
-                    )
-                except (KeyError, ValueError, InvalidOperation) as error:
-                    raise MarketDataError(
-                        f"{path.name} line {line_number}: invalid row {row!r}"
-                    ) from error
+                    except (KeyError, TypeError, ValueError, InvalidOperation) as error:
+                        raise MarketDataError(
+                            f"{path.name} line {line_number}: invalid row {row!r}"
+                        ) from error
+        except MarketDataError:
+            raise
+        except (OSError, UnicodeError, csv.Error) as error:
+            raise MarketDataError(
+                f"Could not read price data from {path.name}"
+            ) from error
 
         return build_price_series(instrument, points, start_date, end_date)

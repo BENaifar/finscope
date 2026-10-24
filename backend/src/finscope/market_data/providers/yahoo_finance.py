@@ -1,7 +1,7 @@
 # providers/yahoo_finance.py
 from collections.abc import Callable, Sequence
 from datetime import date, timedelta
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from src.finscope.domain.instrument import Instrument
 from src.finscope.market_data.errors import MarketDataError
@@ -57,11 +57,20 @@ class YahooFinancePriceHistoryProvider:
                 f"Yahoo Finance request failed for {instrument.symbol}"
             ) from error
 
-        points = (
-            PricePoint(
-                date=day,
-                adjusted_close=Decimal(str(close)).quantize(_PRICE_QUANTUM),
-            )
-            for day, close in history
-        )
+        points:list = []
+
+        for day, close in history:
+            try:
+                adjusted_close = Decimal(str(close)).quantize(_PRICE_QUANTUM)
+            except InvalidOperation as error:
+                raise MarketDataError(
+                    f"Yahoo Finance returned an invalid price for {instrument.symbol}"
+                ) from error
+            if not adjusted_close.is_finite() or adjusted_close <= 0:
+                raise MarketDataError(
+                    f"Yahoo Finance returned an invalid price for {instrument.symbol}"
+                )
+            point = PricePoint(date=day, adjusted_close=adjusted_close)
+            points.append(point)
+
         return build_price_series(instrument, points, start_date, end_date)
