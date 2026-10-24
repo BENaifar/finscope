@@ -13,6 +13,7 @@ from src.finscope.domain.instrument import Instrument
 from src.finscope.domain.portfolio import Portfolio
 from tests.fixtures.factories import (
     jan,
+    make_experiment_running_run,
     make_experiment_run,
     make_portfolio,
     make_price_series,
@@ -26,7 +27,7 @@ def test_successful_execution_returns_completed_run_with_expected_result(
     instrument_a: Instrument,
     single_asset_portfolio: Portfolio,
 ) -> None:
-    run = make_experiment_run(
+    run = make_experiment_running_run(
         created_at=datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
     )
     price_series = (
@@ -47,7 +48,7 @@ def test_successful_execution_returns_completed_run_with_expected_result(
     assert result.started_at is not None
     assert result.finished_at is not None
     assert result.created_at == run.created_at
-    assert run.status is ExperimentStatus.PENDING
+    assert run.status is ExperimentStatus.RUNNING
 
 
 def test_analysis_failure_returns_failed_run_with_error_message(
@@ -55,7 +56,7 @@ def test_analysis_failure_returns_failed_run_with_error_message(
     instrument_a: Instrument,
     single_asset_portfolio: Portfolio,
 ) -> None:
-    run = make_experiment_run(
+    run = make_experiment_running_run(
         created_at=datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
     )
     price_series = (
@@ -74,7 +75,7 @@ def test_mismatched_portfolio_is_rejected_before_execution_begins(
     analysis_engine_spy: Any,
     instrument_a: Instrument,
 ) -> None:
-    run = make_experiment_run()
+    run = make_experiment_running_run()
     portfolio = make_portfolio(
         ((instrument_a, "1.0"),),
         portfolio_id="other-portfolio",
@@ -90,12 +91,12 @@ def test_mismatched_portfolio_is_rejected_before_execution_begins(
     analysis_engine_spy.analyze.assert_not_called()
 
 
-def test_non_pending_run_cannot_be_executed_again(
+def test_non_running_run_cannot_be_executed_again(
     analysis_engine_spy: Any,
     instrument_a: Instrument,
     single_asset_portfolio: Portfolio,
 ) -> None:
-    run = make_running_run()
+    run = make_experiment_run()
     price_series = (
         make_price_series(instrument_a, {jan(1): "100", jan(2): "110"}),
     )
@@ -103,7 +104,7 @@ def test_non_pending_run_cannot_be_executed_again(
 
     with pytest.raises(
         ValueError,
-        match=re.escape("only a pending run can be started"),
+        match=re.escape("Only a running run can be executed"),
     ):
         service.execute(run, single_asset_portfolio, price_series)
 

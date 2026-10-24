@@ -1,5 +1,5 @@
 from collections.abc import Mapping, Sequence
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from decimal import Decimal
 from typing import Any
 
@@ -115,7 +115,7 @@ def make_experiment_run(**overrides: Any) -> ExperimentRun:
     values: dict[str, Any] = {
         "id": "run-1",
         "config": make_config(jan(1), jan(31)),
-        "created_at": datetime(2024, 2, 1, 9, 0),
+        "created_at": datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
         "started_at": None,
         "finished_at": None,
         "status": ExperimentStatus.PENDING,
@@ -125,9 +125,23 @@ def make_experiment_run(**overrides: Any) -> ExperimentRun:
     values.update(overrides)
     return ExperimentRun(**values)
 
+def make_experiment_running_run(**overrides: Any) -> ExperimentRun:
+    values: dict[str, Any] = {
+        "id": "run-1",
+        "config": make_config(jan(1), jan(31)),
+        "created_at": datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
+        "started_at": datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+        "finished_at": None,
+        "status": ExperimentStatus.RUNNING,
+        "result": None,
+        "error_message": None,
+    }
+    values.update(overrides)
+    return ExperimentRun(**values)
+
 
 def ts(minute: int) -> datetime:
-    return datetime(2024, 2, 1, 9, minute)
+    return datetime(2024, 2, 1, 9, minute, tzinfo=timezone.utc)
 
 
 def make_pending_run() -> ExperimentRun:
