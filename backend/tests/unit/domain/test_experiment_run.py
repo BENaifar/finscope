@@ -1,6 +1,6 @@
-import re
+﻿import re
 from dataclasses import FrozenInstanceError
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from typing import Any
 
 import pytest
@@ -27,7 +27,7 @@ def test_status_values_are_stable() -> None:
 
 def test_defaults_to_pending_without_result_or_error() -> None:
     config = make_config(jan(1), jan(31))
-    created_at = datetime(2024, 2, 1, 9, 0)
+    created_at = datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc)
 
     run = ExperimentRun(
         id="run-1",
@@ -59,7 +59,7 @@ def test_defaults_to_pending_without_result_or_error() -> None:
             ExperimentStatus.RUNNING,
             False,
             None,
-            datetime(2024, 2, 1, 9, 1),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
             None,
             id="running",
         ),
@@ -67,16 +67,16 @@ def test_defaults_to_pending_without_result_or_error() -> None:
             ExperimentStatus.COMPLETED,
             True,
             None,
-            datetime(2024, 2, 1, 9, 1),
-            datetime(2024, 2, 1, 9, 5),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
             id="completed",
         ),
         pytest.param(
             ExperimentStatus.FAILED,
             False,
             "boom",
-            datetime(2024, 2, 1, 9, 1),
-            datetime(2024, 2, 1, 9, 5),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
             id="failed",
         ),
     ],
@@ -101,7 +101,7 @@ def test_accepts_valid_status_result_error_combinations(
 
     assert run.id == "run-1"
     assert run.config == make_config(jan(1), jan(31))
-    assert run.created_at == datetime(2024, 2, 1, 9, 0)
+    assert run.created_at == datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc)
     assert run.started_at == started_at
     assert run.finished_at == finished_at
     assert run.status is status
@@ -115,27 +115,18 @@ def test_accepts_valid_status_result_error_combinations(
         pytest.param(
             {
                 "status": ExperimentStatus.RUNNING,
-                "created_at": datetime(2024, 2, 1, 9, 0),
-                "started_at": datetime(2024, 2, 1, 9, 0),
+                "created_at": datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
+                "started_at": datetime(2024, 2, 1, 8, 59, tzinfo=timezone.utc),
             },
-            "created_at must be before started_at",
-            id="created-at-equals-started-at",
-        ),
-        pytest.param(
-            {
-                "status": ExperimentStatus.RUNNING,
-                "created_at": datetime(2024, 2, 1, 9, 0),
-                "started_at": datetime(2024, 2, 1, 8, 59),
-            },
-            "created_at must be before started_at",
+            "created_at must not be after started_at",
             id="created-at-after-started-at",
         ),
         pytest.param(
             {
                 "status": ExperimentStatus.COMPLETED,
                 "result": make_performance_result(),
-                "started_at": datetime(2024, 2, 1, 9, 2),
-                "finished_at": datetime(2024, 2, 1, 9, 1),
+                "started_at": datetime(2024, 2, 1, 9, 2, tzinfo=timezone.utc),
+                "finished_at": datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
             },
             "started_at must not be after finished_at",
             id="started-at-after-finished-at",
@@ -152,7 +143,7 @@ def test_rejects_invalid_timestamp_order(
 def test_accepts_finish_time_equal_to_start_time(
     performance_result: PerformanceResult,
 ) -> None:
-    moment = datetime(2024, 2, 1, 9, 1)
+    moment = datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc)
 
     run = make_experiment_run(
         status=ExperimentStatus.COMPLETED,
@@ -213,8 +204,8 @@ def test_rejects_invalid_created_at_type(invalid_created_at: Any) -> None:
         pytest.param("pending", None, None, id="bare-string"),
         pytest.param(
             None,
-            datetime(2024, 2, 1, 9, 1),
-            datetime(2024, 2, 1, 9, 5),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
             id="none",
         ),
     ],
@@ -250,8 +241,8 @@ def test_rejects_invalid_result_type(invalid_result: Any) -> None:
         make_experiment_run(
             status=ExperimentStatus.COMPLETED,
             result=invalid_result,
-            started_at=datetime(2024, 2, 1, 9, 1),
-            finished_at=datetime(2024, 2, 1, 9, 5),
+            started_at=datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            finished_at=datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
         )
 
 
@@ -270,8 +261,8 @@ def test_rejects_blank_error_message(error_message: str) -> None:
         make_experiment_run(
             status=ExperimentStatus.FAILED,
             error_message=error_message,
-            started_at=datetime(2024, 2, 1, 9, 1),
-            finished_at=datetime(2024, 2, 1, 9, 5),
+            started_at=datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            finished_at=datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
         )
 
 
@@ -289,8 +280,8 @@ def test_rejects_blank_error_message(error_message: str) -> None:
             ExperimentStatus.COMPLETED,
             False,
             None,
-            datetime(2024, 2, 1, 9, 1),
-            datetime(2024, 2, 1, 9, 5),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
             "a completed run must have a result",
             id="completed-without-result",
         ),
@@ -298,8 +289,8 @@ def test_rejects_blank_error_message(error_message: str) -> None:
             ExperimentStatus.FAILED,
             False,
             None,
-            datetime(2024, 2, 1, 9, 1),
-            datetime(2024, 2, 1, 9, 5),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
             "a failed run must have an error message",
             id="failed-without-error",
         ),
@@ -316,7 +307,7 @@ def test_rejects_blank_error_message(error_message: str) -> None:
             ExperimentStatus.RUNNING,
             True,
             None,
-            datetime(2024, 2, 1, 9, 1),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
             None,
             "only a completed run can have a result",
             id="running-with-result",
@@ -325,8 +316,8 @@ def test_rejects_blank_error_message(error_message: str) -> None:
             ExperimentStatus.FAILED,
             True,
             "boom",
-            datetime(2024, 2, 1, 9, 1),
-            datetime(2024, 2, 1, 9, 5),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
             "only a completed run can have a result",
             id="failed-with-result",
         ),
@@ -343,7 +334,7 @@ def test_rejects_blank_error_message(error_message: str) -> None:
             ExperimentStatus.RUNNING,
             False,
             "boom",
-            datetime(2024, 2, 1, 9, 1),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
             None,
             "only a failed run can have an error message",
             id="running-with-error",
@@ -352,8 +343,8 @@ def test_rejects_blank_error_message(error_message: str) -> None:
             ExperimentStatus.COMPLETED,
             True,
             "boom",
-            datetime(2024, 2, 1, 9, 1),
-            datetime(2024, 2, 1, 9, 5),
+            datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
             "only a failed run can have an error message",
             id="completed-with-error",
         ),
@@ -400,7 +391,6 @@ def test_rejects_non_string_error_message(invalid_error_message: Any) -> None:
         make_experiment_run(
             status=ExperimentStatus.FAILED,
             error_message=invalid_error_message,
-            started_at=datetime(2024, 2, 1, 9, 1),
-            finished_at=datetime(2024, 2, 1, 9, 5),
+            started_at=datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+            finished_at=datetime(2024, 2, 1, 9, 5, tzinfo=timezone.utc),
         )
-

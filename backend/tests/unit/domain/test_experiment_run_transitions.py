@@ -1,6 +1,6 @@
-import re
+﻿import re
 from collections.abc import Callable
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any
 
 import pytest
@@ -15,14 +15,13 @@ from tests.fixtures.factories import (
     ts,
 )
 
-def test_start_rejects_start_time_before_creation() -> None:
+def test_start_accepts_start_time_equal_to_creation() -> None:
     run = make_experiment_run()
 
-    with pytest.raises(
-        ValueError,
-        match="created_at must be before started_at",
-    ):
-        run.start(ts(0))
+    running_run = run.start(ts(0))
+
+    assert running_run.status is ExperimentStatus.RUNNING
+    assert running_run.started_at == ts(0)
 
 def test_complete_returns_completed_run_with_result_and_finish_time(
     running_run: ExperimentRun,
@@ -278,7 +277,7 @@ def test_fail_rejects_invalid_error_message(
 
 def test_start_returns_a_new_running_run() -> None:
     run = make_experiment_run()
-    started_at = datetime(2024, 2, 1, 9, 1)
+    started_at = datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc)
 
     running_run = run.start(started_at)
 
@@ -295,7 +294,7 @@ def test_start_returns_a_new_running_run() -> None:
 def test_start_does_not_modify_original_run() -> None:
     run = make_experiment_run()
 
-    run.start(datetime(2024, 2, 1, 9, 1))
+    run.start(datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc))
 
     assert run.status is ExperimentStatus.PENDING
     assert run.started_at is None
@@ -304,14 +303,14 @@ def test_start_does_not_modify_original_run() -> None:
 def test_start_rejects_non_pending_run() -> None:
     run = make_experiment_run(
         status=ExperimentStatus.RUNNING,
-        started_at=datetime(2024, 2, 1, 9, 1),
+        started_at=datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
     )
 
     with pytest.raises(
         ValueError,
         match="only a pending run can be started",
     ):
-        run.start(datetime(2024, 2, 1, 9, 2))
+        run.start(datetime(2024, 2, 1, 9, 2, tzinfo=timezone.utc))
 
 def test_fail_rejects_non_string_error_message(
     running_run: ExperimentRun,
