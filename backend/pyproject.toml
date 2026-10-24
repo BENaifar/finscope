@@ -1,0 +1,64 @@
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "finscope"
+version = "0.1.0"
+description = "A portfolio backtesting and analysis application"
+requires-python = ">=3.11"
+dependencies = [
+    "SQLAlchemy>=2.0,<3.0",
+    "psycopg[binary]>=3.2,<4.0",
+    "alembic>=1.14,<2.0",
+    "beautifulsoup4==4.15.0",
+    "certifi==2026.10.23",
+    "cffi==2.1.1",
+    "charset-normalizer==3.5.2",
+    "colorama==0.4.6",
+    "curl_cffi==0.16.3",
+    "idna==3.20",
+    "lxml==6.1.3",
+    "multitasking==0.0.13",
+    "numpy==2.5.4",
+    "packaging==26.3",
+    "pandas==3.1.0",
+    "peewee==4.5.3",
+    "platformdirs==4.13.5",
+    "protobuf==7.36.2",
+    "pycparser==3.12",
+    "Pygments==2.21.0",
+    "python-dateutil==3.0.0",
+    "pytz==2026.5",
+    "requests==2.34.2",
+    "six==1.17.0",
+    "soupsieve==3.0.4",
+    "typing_extensions==4.16.0",
+    "tzdata==2026.5",
+    "urllib3==2.8.0",
+    "websockets==17.3",
+    "yfinance==1.7.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "iniconfig==2.3.1",
+    "pluggy==1.7.0",
+    "pytest==9.1.1",
+    "ruff==0.17.2",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.ruff]
+line-length = 88
+src = ["src"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
