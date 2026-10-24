@@ -1,5 +1,5 @@
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
@@ -21,28 +21,35 @@ class ExperimentRun:
     created_at: datetime
     started_at: datetime | None
     finished_at: datetime | None
-    status: ExperimentStatus = field(default_factory=lambda: ExperimentStatus.PENDING)
+    status: ExperimentStatus = ExperimentStatus.PENDING
     result: PerformanceResult | None = None
     error_message: str | None = None
 
     def __post_init__(self) -> None:
+        if not isinstance(self.created_at, datetime):
+            raise TypeError("created_at must be a datetime")
+
         if not isinstance(self.id, str) or not self.id.strip():
             raise ValueError("id must be a non-empty string")
 
         if not isinstance(self.config, ExperimentConfig):
             raise TypeError("config must be an ExperimentConfig")
 
-        if not isinstance(self.created_at, datetime):
-            raise TypeError("created_at must be a datetime")
+        timestamps = (
+            ("created_at", self.created_at),
+            ("started_at", self.started_at),
+            ("finished_at", self.finished_at),
+        )
 
-        if self.started_at is not None and not isinstance(self.started_at, datetime):
-            raise TypeError("started_at must be a datetime or None")
+        for name, value in timestamps:
+            if value is not None and not isinstance(value, datetime):
+                raise TypeError(f"{name} must be a datetime or None")
 
-        if self.finished_at is not None and not isinstance(self.finished_at, datetime):
-            raise TypeError("finished_at must be a datetime or None")
+            if value is not None and value.utcoffset() is None:
+                raise ValueError(f"{name} must be timezone-aware")
 
-        if self.started_at is not None and self.created_at >= self.started_at:
-            raise ValueError("created_at must be before started_at")
+        if self.started_at is not None and self.created_at > self.started_at:
+            raise ValueError("created_at must not be after started_at")
 
         if (
             self.started_at is not None
@@ -57,13 +64,17 @@ class ExperimentRun:
         if self.status == ExperimentStatus.PENDING:
             if self.started_at is not None or self.finished_at is not None:
                 raise ValueError("a pending run cannot have start or finish times")
+
         elif self.status == ExperimentStatus.RUNNING:
             if self.started_at is None:
                 raise ValueError("a running run must have a start time")
             if self.finished_at is not None:
                 raise ValueError("a running run cannot have a finish time")
+
         elif self.started_at is None or self.finished_at is None:
-            raise ValueError("a completed or failed run must have start and finish times")
+            raise ValueError(
+                "a completed or failed run must have start and finish times"
+            )
 
         if self.result is not None and not isinstance(
             self.result, PerformanceResult
@@ -101,7 +112,11 @@ class ExperimentRun:
             status=ExperimentStatus.RUNNING,
         )
 
-    def complete(self, finished_at: datetime, result: PerformanceResult) -> "ExperimentRun":
+    def complete(
+        self,
+        finished_at: datetime,
+        result: PerformanceResult,
+    ) -> "ExperimentRun":
         if self.status != ExperimentStatus.RUNNING:
             raise ValueError("only a running run can be completed")
 
@@ -114,8 +129,12 @@ class ExperimentRun:
             result=result,
             status=ExperimentStatus.COMPLETED,
         )
-    
-    def fail(self, finished_at: datetime, error_message: str) -> "ExperimentRun":
+
+    def fail(
+        self,
+        finished_at: datetime,
+        error_message: str,
+    ) -> "ExperimentRun":
         if self.status != ExperimentStatus.RUNNING:
             raise ValueError("only a running run can be failed")
 
@@ -128,5 +147,3 @@ class ExperimentRun:
             error_message=error_message,
             status=ExperimentStatus.FAILED,
         )
-
-    
