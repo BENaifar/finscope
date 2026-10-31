@@ -1,18 +1,18 @@
 from collections.abc import Mapping, Sequence
-from datetime import date, datetime, timezone
+from datetime import UTC, date, datetime
 from decimal import Decimal
 from typing import Any
 
-from src.finscope.analytics.models.performance_metrics import PerformanceMetrics
-from src.finscope.analytics.models.performance_result import PerformanceResult
-from src.finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
-from src.finscope.domain.experiment_config import ExperimentConfig
-from src.finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
-from src.finscope.domain.instrument import Instrument
-from src.finscope.domain.portfolio import Portfolio
-from src.finscope.domain.portfolio_allocation import PortfolioAllocation
-from src.finscope.market_data.models.price_point import PricePoint
-from src.finscope.market_data.models.price_series import PriceSeries
+from finscope.analytics.models.performance_metrics import PerformanceMetrics
+from finscope.analytics.models.performance_result import PerformanceResult
+from finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
+from finscope.domain.experiment_config import ExperimentConfig
+from finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
+from finscope.domain.instrument import Instrument
+from finscope.domain.portfolio import Portfolio
+from finscope.domain.portfolio_allocation import PortfolioAllocation
+from finscope.market_data.models.price_point import PricePoint
+from finscope.market_data.models.price_series import PriceSeries
 
 
 def jan(day: int) -> date:
@@ -22,10 +22,12 @@ def jan(day: int) -> date:
 def make_instrument(
     instrument_id: str,
     symbol: str | None = None,
+    currency: str | None = None
 ) -> Instrument:
     return Instrument(
         id=instrument_id,
         symbol=symbol if symbol is not None else instrument_id,
+        currency=currency if currency is not None else "USD",
         name=instrument_id,
     )
 
@@ -115,7 +117,7 @@ def make_experiment_run(**overrides: Any) -> ExperimentRun:
     values: dict[str, Any] = {
         "id": "run-1",
         "config": make_config(jan(1), jan(31)),
-        "created_at": datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
+        "created_at": datetime(2024, 2, 1, 9, 0, tzinfo=UTC),
         "started_at": None,
         "finished_at": None,
         "status": ExperimentStatus.PENDING,
@@ -129,8 +131,8 @@ def make_experiment_running_run(**overrides: Any) -> ExperimentRun:
     values: dict[str, Any] = {
         "id": "run-1",
         "config": make_config(jan(1), jan(31)),
-        "created_at": datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
-        "started_at": datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+        "created_at": datetime(2024, 2, 1, 9, 0, tzinfo=UTC),
+        "started_at": datetime(2024, 2, 1, 9, 1, tzinfo=UTC),
         "finished_at": None,
         "status": ExperimentStatus.RUNNING,
         "result": None,
@@ -141,10 +143,10 @@ def make_experiment_running_run(**overrides: Any) -> ExperimentRun:
 
 
 def ts(minute: int) -> datetime:
-    return datetime(2024, 2, 1, 9, minute, tzinfo=timezone.utc)
+    return datetime(2024, 2, 1, 9, minute, tzinfo=UTC)
 
 
-FROZEN_NOW = datetime(2024, 3, 1, 12, 0, tzinfo=timezone.utc)
+FROZEN_NOW = datetime(2024, 3, 1, 12, 0, tzinfo=UTC)
 
 
 def make_pending_run() -> ExperimentRun:
