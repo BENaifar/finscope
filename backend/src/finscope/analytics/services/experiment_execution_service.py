@@ -1,12 +1,12 @@
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from src.finscope.analytics.services.portfolio_analysis_engine import (
+from finscope.analytics.services.portfolio_analysis_engine import (
     PortfolioAnalysisEngine,
 )
-from src.finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
-from src.finscope.domain.portfolio import Portfolio
-from src.finscope.market_data.models.price_series import PriceSeries
+from finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
+from finscope.domain.portfolio import Portfolio
+from finscope.market_data.models.price_series import PriceSeries
 
 
 class ExperimentExecutionService:
@@ -29,7 +29,7 @@ class ExperimentExecutionService:
             raise ValueError("Only a running run can be failed")
 
         return running_run.fail(
-            finished_at=datetime.now(timezone.utc),
+            finished_at=datetime.now(UTC),
             error_message=error_message,
         )
 
@@ -72,6 +72,6 @@ class ExperimentExecutionService:
             )
 
         return running_run.complete(
-            finished_at=datetime.now(timezone.utc),
+            finished_at=datetime.now(UTC),
             result=result,
         )

@@ -1,28 +1,27 @@
 import re
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import pytest
-
-from src.finscope.analytics.models.performance_result import PerformanceResult
-from src.finscope.analytics.services.experiment_execution_service import (
-    ExperimentExecutionService,
-)
-from src.finscope.domain.experiment_run import ExperimentRun
-from src.finscope.domain.experiment_run import ExperimentStatus
-from src.finscope.domain.instrument import Instrument
-from src.finscope.domain.portfolio import Portfolio
 from tests.fixtures.factories import (
     jan,
     make_completed_run,
-    make_experiment_running_run,
     make_experiment_run,
+    make_experiment_running_run,
     make_failed_run,
     make_pending_run,
     make_portfolio,
     make_price_series,
 )
+
+from finscope.analytics.models.performance_result import PerformanceResult
+from finscope.analytics.services.experiment_execution_service import (
+    ExperimentExecutionService,
+)
+from finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
+from finscope.domain.instrument import Instrument
+from finscope.domain.portfolio import Portfolio
 
 
 def test_successful_execution_returns_completed_run_with_expected_result(
@@ -32,7 +31,7 @@ def test_successful_execution_returns_completed_run_with_expected_result(
     single_asset_portfolio: Portfolio,
 ) -> None:
     run = make_experiment_running_run(
-        created_at=datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
+        created_at=datetime(2024, 2, 1, 9, 0, tzinfo=UTC),
     )
     price_series = (
         make_price_series(instrument_a, {jan(1): "100", jan(2): "110"}),
@@ -61,7 +60,7 @@ def test_analysis_failure_returns_failed_run_with_error_message(
     single_asset_portfolio: Portfolio,
 ) -> None:
     run = make_experiment_running_run(
-        created_at=datetime(2024, 2, 1, 9, 0, tzinfo=timezone.utc),
+        created_at=datetime(2024, 2, 1, 9, 0, tzinfo=UTC),
     )
     price_series = (
         make_price_series(instrument_a, {jan(1): "100", jan(2): "110"}),

@@ -1,8 +1,8 @@
-from decimal import Decimal
 from datetime import date
+from decimal import Decimal
 
-from src.finscope.analytics.models.performance_metrics import PerformanceMetrics
-from src.finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
+from finscope.analytics.models.performance_metrics import PerformanceMetrics
+from finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
 
 
 class PerformanceCalculationService:

@@ -4,22 +4,6 @@ from datetime import datetime
 from typing import Any
 
 import pytest
-
-from src.finscope.analytics.models.performance_result import PerformanceResult
-from src.finscope.analytics.services.experiment_execution_service import (
-    ExperimentExecutionService,
-)
-from src.finscope.analytics.services.experiment_orchestration_service import (
-    ExperimentOrchestrationService,
-)
-from src.finscope.analytics.services.portfolio_analysis_engine import (
-    PortfolioAnalysisEngine,
-)
-from src.finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
-from src.finscope.domain.instrument import Instrument
-from src.finscope.domain.portfolio import Portfolio
-from src.finscope.market_data.errors import MarketDataError
-from src.finscope.market_data.models.price_series import PriceSeries
 from tests.fixtures.factories import (
     FROZEN_NOW,
     make_completed_run,
@@ -27,6 +11,19 @@ from tests.fixtures.factories import (
     make_portfolio,
     make_running_run,
 )
+
+from finscope.analytics.models.performance_result import PerformanceResult
+from finscope.analytics.services.experiment_execution_service import (
+    ExperimentExecutionService,
+)
+from finscope.analytics.services.experiment_orchestration_service import (
+    ExperimentOrchestrationService,
+)
+from finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
+from finscope.domain.instrument import Instrument
+from finscope.domain.portfolio import Portfolio
+from finscope.market_data.errors import MarketDataError
+from finscope.market_data.models.price_series import PriceSeries
 
 
 def test_orchestrate_returns_completed_run_with_result(

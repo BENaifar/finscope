@@ -1,9 +1,9 @@
 from decimal import Decimal
 
-from src.finscope.domain.portfolio import Portfolio
-from src.finscope.domain.experiment_config import ExperimentConfig
-from src.finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
-from src.finscope.market_data.models.price_series import PriceSeries
+from finscope.analytics.models.portfolio_value_point import PortfolioValuePoint
+from finscope.domain.experiment_config import ExperimentConfig
+from finscope.domain.portfolio import Portfolio
+from finscope.market_data.models.price_series import PriceSeries
 
 
 class PortfolioValuationService:

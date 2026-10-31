@@ -2,6 +2,7 @@ from dataclasses import dataclass, field
 from datetime import date
 from decimal import Decimal
 
+
 @dataclass(frozen=True)
 class PortfolioValuePoint:
     valuation_date: date

@@ -3,10 +3,10 @@ from decimal import Decimal
 
 import pytest
 
-from src.finscope.analytics.models.portfolio_value_point import (
+from finscope.analytics.models.portfolio_value_point import (
     PortfolioValuePoint,
 )
-from src.finscope.analytics.services.performance_calculation_service import (
+from finscope.analytics.services.performance_calculation_service import (
     PerformanceCalculationService,
 )
 

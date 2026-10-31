@@ -3,17 +3,6 @@ from datetime import date
 from decimal import Decimal
 
 import pytest
-
-from src.finscope.analytics.models.portfolio_value_point import (
-    PortfolioValuePoint,
-)
-from src.finscope.analytics.services.portfolio_valuation_service import (
-    PortfolioValuationService,
-)
-from src.finscope.domain.experiment_config import ExperimentConfig
-from src.finscope.domain.instrument import Instrument
-from src.finscope.domain.portfolio import Portfolio
-from src.finscope.market_data.models.price_series import PriceSeries
 from tests.fixtures.factories import (
     jan,
     make_config,
@@ -21,6 +10,16 @@ from tests.fixtures.factories import (
     make_portfolio,
     make_price_series,
 )
+
+from finscope.analytics.models.portfolio_value_point import (
+    PortfolioValuePoint,
+)
+from finscope.analytics.services.portfolio_valuation_service import (
+    PortfolioValuationService,
+)
+from finscope.domain.experiment_config import ExperimentConfig
+from finscope.domain.instrument import Instrument
+from finscope.domain.portfolio import Portfolio
 
 
 def test_single_instrument_value_tracks_price_ratio(

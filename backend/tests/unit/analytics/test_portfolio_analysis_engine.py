@@ -4,20 +4,6 @@ from typing import Any
 from unittest.mock import create_autospec
 
 import pytest
-
-from src.finscope.analytics.services.performance_calculation_service import (
-    PerformanceCalculationService,
-)
-from src.finscope.analytics.services.portfolio_analysis_engine import (
-    PortfolioAnalysisEngine,
-)
-from src.finscope.analytics.services.portfolio_valuation_service import (
-    PortfolioValuationService,
-)
-from src.finscope.domain.experiment_config import ExperimentConfig
-from src.finscope.domain.instrument import Instrument
-from src.finscope.domain.portfolio import Portfolio
-from src.finscope.market_data.models.price_series import PriceSeries
 from tests.fixtures.factories import (
     jan,
     make_config,
@@ -27,6 +13,18 @@ from tests.fixtures.factories import (
     make_price_series,
     make_value_points,
 )
+
+from finscope.analytics.services.performance_calculation_service import (
+    PerformanceCalculationService,
+)
+from finscope.analytics.services.portfolio_analysis_engine import (
+    PortfolioAnalysisEngine,
+)
+from finscope.analytics.services.portfolio_valuation_service import (
+    PortfolioValuationService,
+)
+from finscope.domain.experiment_config import ExperimentConfig
+from finscope.domain.instrument import Instrument
 
 
 def test_passes_inputs_to_valuation_service(

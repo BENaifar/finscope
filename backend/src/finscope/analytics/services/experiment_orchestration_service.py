@@ -1,14 +1,14 @@
 
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
-from src.finscope.analytics.services.experiment_execution_service import (
+from finscope.analytics.services.experiment_execution_service import (
     ExperimentExecutionService,
 )
-from src.finscope.domain.experiment_run import ExperimentRun
-from src.finscope.domain.portfolio import Portfolio
-from src.finscope.market_data.errors import MarketDataError
-from src.finscope.market_data.models.price_series import PriceSeries
-from src.finscope.market_data.providers.price_history_provider import (
+from finscope.domain.experiment_run import ExperimentRun
+from finscope.domain.portfolio import Portfolio
+from finscope.market_data.errors import MarketDataError
+from finscope.market_data.models.price_series import PriceSeries
+from finscope.market_data.providers.price_history_provider import (
     PriceHistoryProvider,
 )
 
@@ -38,7 +38,7 @@ class ExperimentOrchestrationService:
                 "The portfolio and experiment run's portfolio do not match"
             )
 
-        running_run = run.start(datetime.now(timezone.utc))
+        running_run = run.start(datetime.now(UTC))
 
         try:
             price_series: tuple[PriceSeries, ...] = (
