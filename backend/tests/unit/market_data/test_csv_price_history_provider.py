@@ -1,20 +1,19 @@
+import re
 from datetime import date
 from decimal import Decimal
 from pathlib import Path
-import re
 
 import pytest
+from tests.fixtures.factories import make_instrument
 
-from src.finscope.market_data.errors import (
+from finscope.market_data.errors import (
     InvalidDateRangeError,
     MarketDataError,
     PriceDataNotFoundError,
 )
-from src.finscope.market_data.providers.csv_provider import (
+from finscope.market_data.providers.csv_provider import (
     CsvPriceHistoryProvider,
 )
-from tests.fixtures.factories import make_instrument
-
 
 FIXTURE_DATA_DIR = Path(__file__).parents[2] / "fixtures" / "price_history"
 

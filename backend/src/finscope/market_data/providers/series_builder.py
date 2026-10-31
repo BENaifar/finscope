@@ -2,13 +2,13 @@
 from collections.abc import Iterable
 from datetime import date
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.errors import (
+from finscope.domain.instrument import Instrument
+from finscope.market_data.errors import (
     InvalidDateRangeError,
     MarketDataError,
     PriceDataNotFoundError,
 )
-from src.finscope.market_data.models.price_series import PricePoint, PriceSeries
+from finscope.market_data.models.price_series import PricePoint, PriceSeries
 
 
 def validate_date_range(start_date: date, end_date: date) -> None:

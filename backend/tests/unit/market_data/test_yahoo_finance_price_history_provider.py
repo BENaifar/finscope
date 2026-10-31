@@ -1,19 +1,18 @@
+import re
 from datetime import date
 from decimal import Decimal
-import re
 
 import pytest
+from tests.fixtures.factories import make_instrument
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.errors import (
+from finscope.market_data.errors import (
     InvalidDateRangeError,
     MarketDataError,
     PriceDataNotFoundError,
 )
-from src.finscope.market_data.providers.yahoo_finance import (
+from finscope.market_data.providers.yahoo_finance import (
     YahooFinancePriceHistoryProvider,
 )
-from tests.fixtures.factories import make_instrument
 
 
 def test_converts_loader_floats_to_six_decimal_places() -> None:

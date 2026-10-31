@@ -2,8 +2,8 @@
 from datetime import date
 from typing import Protocol
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.models.price_series import PriceSeries
+from finscope.domain.instrument import Instrument
+from finscope.market_data.models.price_series import PriceSeries
 
 
 class PriceHistoryProvider(Protocol):

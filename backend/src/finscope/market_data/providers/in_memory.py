@@ -2,9 +2,9 @@
 from collections.abc import Mapping, Sequence
 from datetime import date
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.models.price_series import PricePoint, PriceSeries
-from src.finscope.market_data.providers.series_builder import (
+from finscope.domain.instrument import Instrument
+from finscope.market_data.models.price_series import PricePoint, PriceSeries
+from finscope.market_data.providers.series_builder import (
     build_price_series,
     validate_date_range,
 )

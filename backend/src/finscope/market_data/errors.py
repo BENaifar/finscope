@@ -1,7 +1,7 @@
 # errors.py
 from datetime import date
 
-from src.finscope.domain.instrument import Instrument
+from finscope.domain.instrument import Instrument
 
 
 class MarketDataError(Exception):

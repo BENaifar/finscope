@@ -2,8 +2,8 @@ from dataclasses import dataclass
 from datetime import date
 from decimal import Decimal
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.models.price_point import PricePoint
+from finscope.domain.instrument import Instrument
+from finscope.market_data.models.price_point import PricePoint
 
 
 @dataclass(frozen=True)

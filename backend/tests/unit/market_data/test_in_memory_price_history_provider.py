@@ -2,17 +2,17 @@ from datetime import date
 from decimal import Decimal
 
 import pytest
+from tests.fixtures.factories import make_instrument
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.errors import (
+from finscope.domain.instrument import Instrument
+from finscope.market_data.errors import (
     InvalidDateRangeError,
     PriceDataNotFoundError,
 )
-from src.finscope.market_data.models.price_point import PricePoint
-from src.finscope.market_data.providers.in_memory import (
+from finscope.market_data.models.price_point import PricePoint
+from finscope.market_data.providers.in_memory import (
     InMemoryPriceHistoryProvider,
 )
-from tests.fixtures.factories import make_instrument
 
 
 def test_returns_series_in_instrument_request_order() -> None:

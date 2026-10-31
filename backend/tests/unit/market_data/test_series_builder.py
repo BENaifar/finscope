@@ -1,21 +1,20 @@
+import re
 from datetime import date
 from decimal import Decimal
-import re
 
 import pytest
+from tests.fixtures.factories import make_instrument
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.errors import (
+from finscope.market_data.errors import (
     InvalidDateRangeError,
     MarketDataError,
     PriceDataNotFoundError,
 )
-from src.finscope.market_data.models.price_point import PricePoint
-from src.finscope.market_data.providers.series_builder import (
+from finscope.market_data.models.price_point import PricePoint
+from finscope.market_data.providers.series_builder import (
     build_price_series,
     validate_date_range,
 )
-from tests.fixtures.factories import make_instrument
 
 
 def test_validate_date_range_accepts_equal_dates() -> None:

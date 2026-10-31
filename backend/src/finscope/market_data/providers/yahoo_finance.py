@@ -3,10 +3,10 @@ from collections.abc import Callable, Sequence
 from datetime import date, timedelta
 from decimal import Decimal, InvalidOperation
 
-from src.finscope.domain.instrument import Instrument
-from src.finscope.market_data.errors import MarketDataError
-from src.finscope.market_data.models.price_series import PricePoint, PriceSeries
-from src.finscope.market_data.providers.series_builder import (
+from finscope.domain.instrument import Instrument
+from finscope.market_data.errors import MarketDataError
+from finscope.market_data.models.price_series import PricePoint, PriceSeries
+from finscope.market_data.providers.series_builder import (
     build_price_series,
     validate_date_range,
 )
