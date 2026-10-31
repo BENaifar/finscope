@@ -59,6 +59,7 @@ pythonpath = ["src"]
 [tool.ruff]
 line-length = 88
 src = ["src"]
+extend-exclude = ["migrations/versions"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
