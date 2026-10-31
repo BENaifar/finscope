@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
-from src.finscope.domain.instrument import Instrument
+from finscope.domain.instrument import Instrument
 
 
 @dataclass(frozen=True)

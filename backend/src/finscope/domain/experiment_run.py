@@ -3,8 +3,8 @@ from dataclasses import dataclass
 from datetime import datetime
 from enum import Enum
 
-from src.finscope.analytics.models.performance_result import PerformanceResult
-from src.finscope.domain.experiment_config import ExperimentConfig
+from finscope.analytics.models.performance_result import PerformanceResult
+from finscope.domain.experiment_config import ExperimentConfig
 
 
 class ExperimentStatus(str, Enum):

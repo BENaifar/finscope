@@ -1,12 +1,9 @@
-﻿import re
+import re
 from collections.abc import Callable
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from typing import Any
 
 import pytest
-
-from src.finscope.analytics.models.performance_result import PerformanceResult
-from src.finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
 from tests.fixtures.factories import (
     make_completed_run,
     make_experiment_run,
@@ -14,6 +11,10 @@ from tests.fixtures.factories import (
     make_pending_run,
     ts,
 )
+
+from finscope.analytics.models.performance_result import PerformanceResult
+from finscope.domain.experiment_run import ExperimentRun, ExperimentStatus
+
 
 def test_start_accepts_start_time_equal_to_creation() -> None:
     run = make_experiment_run()
@@ -289,7 +290,7 @@ def test_fail_rejects_invalid_error_message(
 
 def test_start_returns_a_new_running_run() -> None:
     run = make_experiment_run()
-    started_at = datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc)
+    started_at = datetime(2024, 2, 1, 9, 1, tzinfo=UTC)
 
     running_run = run.start(started_at)
 
@@ -306,7 +307,7 @@ def test_start_returns_a_new_running_run() -> None:
 def test_start_does_not_modify_original_run() -> None:
     run = make_experiment_run()
 
-    run.start(datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc))
+    run.start(datetime(2024, 2, 1, 9, 1, tzinfo=UTC))
 
     assert run.status is ExperimentStatus.PENDING
     assert run.started_at is None
@@ -315,14 +316,14 @@ def test_start_does_not_modify_original_run() -> None:
 def test_start_rejects_non_pending_run() -> None:
     run = make_experiment_run(
         status=ExperimentStatus.RUNNING,
-        started_at=datetime(2024, 2, 1, 9, 1, tzinfo=timezone.utc),
+        started_at=datetime(2024, 2, 1, 9, 1, tzinfo=UTC),
     )
 
     with pytest.raises(
         ValueError,
         match="only a pending run can be started",
     ):
-        run.start(datetime(2024, 2, 1, 9, 2, tzinfo=timezone.utc))
+        run.start(datetime(2024, 2, 1, 9, 2, tzinfo=UTC))
 
 def test_fail_rejects_non_string_error_message(
     running_run: ExperimentRun,
