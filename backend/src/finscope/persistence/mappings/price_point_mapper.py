@@ -42,3 +42,4 @@ def to_domain_price_series(
         instrument=instrument,
         points=tuple(to_domain_price_point(record) for record in records),
     )
+
