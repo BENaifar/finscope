@@ -26,14 +26,14 @@ class PerformanceCalculationService:
         best_return, best_return_date = self._best_period_return(points)
 
         return PerformanceMetrics(
-            initial_value=float(initial_value),
-            final_value=float(final_value),
-            pnl=float(pnl),
-            total_return=float(pnl / initial_value),
-            maximum_drawdown=float(drawdown),
+            initial_value=initial_value,
+            final_value=final_value,
+            pnl=pnl,
+            total_return=pnl / initial_value,
+            maximum_drawdown=drawdown,
             maximum_drawdown_peak_date=peak_date,
             maximum_drawdown_trough_date=trough_date,
-            best_daily_return=float(best_return),
+            best_daily_return=best_return,
             best_daily_return_date=best_return_date,
             highest_portfolio_value_date=max(
                 points, key=lambda p: p.total_value
