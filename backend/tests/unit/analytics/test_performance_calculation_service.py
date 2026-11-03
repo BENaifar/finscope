@@ -36,24 +36,24 @@ def make_series(*values: str) -> tuple[PortfolioValuePoint, ...]:
 @pytest.mark.parametrize(
     ("initial", "final", "expected_pnl", "expected_return"),
     [
-        ("100", "110", 10.0, 0.10),
-        ("100", "80", -20.0, -0.20),
-        ("100", "100", 0.0, 0.0),
+        ("100", "110", "10", "0.10"),
+        ("100", "80", "-20", "-0.20"),
+        ("100", "100", "0", "0"),
     ],
 )
 def test_calculates_total_return_and_pnl(
     service: PerformanceCalculationService,
     initial: str,
     final: str,
-    expected_pnl: float,
-    expected_return: float,
+    expected_pnl: str,
+    expected_return: str,
 ) -> None:
     result = service.calculate(make_series(initial, final))
 
-    assert result.initial_value == pytest.approx(float(initial))
-    assert result.final_value == pytest.approx(float(final))
-    assert result.pnl == pytest.approx(expected_pnl)
-    assert result.total_return == pytest.approx(expected_return)
+    assert result.initial_value == pytest.approx(Decimal(initial))
+    assert result.final_value == pytest.approx(Decimal(final))
+    assert result.pnl == pytest.approx(Decimal(expected_pnl))
+    assert result.total_return == pytest.approx(Decimal(expected_return))
 
 
 def test_total_return_uses_first_and_last_values_only(
@@ -61,8 +61,8 @@ def test_total_return_uses_first_and_last_values_only(
 ) -> None:
     result = service.calculate(make_series("100", "150", "60", "110"))
 
-    assert result.pnl == pytest.approx(10.0)
-    assert result.total_return == pytest.approx(0.10)
+    assert result.pnl == pytest.approx(Decimal("10.0"))
+    assert result.total_return == pytest.approx(Decimal("0.10"))
 
 
 # 2. Best period return
@@ -74,7 +74,7 @@ def test_finds_best_period_return_with_mixed_returns(
     # +10%, -20%, +12.5%
     result = service.calculate(make_series("100", "110", "88", "99"))
 
-    assert result.best_daily_return == pytest.approx(0.125)
+    assert result.best_daily_return == pytest.approx(Decimal("0.125"))
     assert result.best_daily_return_date == date(2026, 1, 4)
 
 
@@ -84,7 +84,7 @@ def test_best_period_return_can_be_in_the_first_period(
     # +20%, -5%, +2.63%
     result = service.calculate(make_series("100", "120", "114", "117"))
 
-    assert result.best_daily_return == pytest.approx(0.20)
+    assert result.best_daily_return == pytest.approx(Decimal("0.20"))
     assert result.best_daily_return_date == date(2026, 1, 2)
 
 
@@ -94,7 +94,7 @@ def test_best_period_return_is_least_negative_when_all_returns_are_losses(
     # -10%, -5.56%
     result = service.calculate(make_series("100", "90", "85"))
 
-    assert result.best_daily_return == pytest.approx(-5 / 90)
+    assert result.best_daily_return == pytest.approx(Decimal(-5) / Decimal(90))
     assert result.best_daily_return_date == date(2026, 1, 3)
 
 
@@ -104,7 +104,7 @@ def test_best_period_return_tie_resolves_to_earliest_date(
     # +10%, +10%
     result = service.calculate(make_series("100", "110", "121"))
 
-    assert result.best_daily_return == pytest.approx(0.10)
+    assert result.best_daily_return == pytest.approx(Decimal("0.10"))
     assert result.best_daily_return_date == date(2026, 1, 2)
 
 
@@ -204,7 +204,7 @@ def test_accepts_exactly_two_points(
 ) -> None:
     result = service.calculate(make_series("100", "110"))
 
-    assert result.total_return == pytest.approx(0.10)
+    assert result.total_return == pytest.approx(Decimal("0.10"))
 
 
 # 7. Declining series
@@ -215,11 +215,11 @@ def test_declining_series_has_positive_drawdown_with_correct_dates(
 ) -> None:
     result = service.calculate(make_series("100", "90", "80", "70"))
 
-    assert result.maximum_drawdown == pytest.approx(0.30)
+    assert result.maximum_drawdown == pytest.approx(Decimal("0.30"))
     assert result.maximum_drawdown_peak_date == date(2026, 1, 1)
     assert result.maximum_drawdown_trough_date == date(2026, 1, 4)
-    assert result.total_return == pytest.approx(-0.30)
-    assert result.pnl == pytest.approx(-30.0)
+    assert result.total_return == pytest.approx(Decimal("-0.30"))
+    assert result.pnl == pytest.approx(Decimal("-30.0"))
 
 
 def test_drawdown_peak_and_trough_with_recovery(
@@ -228,6 +228,6 @@ def test_drawdown_peak_and_trough_with_recovery(
     # Peak 110 on Jan 2, trough 88 on Jan 3, partial recovery to 99
     result = service.calculate(make_series("100", "110", "88", "99"))
 
-    assert result.maximum_drawdown == pytest.approx(0.20)
+    assert result.maximum_drawdown == pytest.approx(Decimal("0.20"))
     assert result.maximum_drawdown_peak_date == date(2026, 1, 2)
     assert result.maximum_drawdown_trough_date == date(2026, 1, 3)
