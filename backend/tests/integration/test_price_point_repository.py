@@ -8,7 +8,6 @@ from sqlalchemy.orm import Session
 from tests.fixtures.factories import make_instrument, make_price_series
 
 from finscope.domain.instrument import Instrument
-from finscope.market_data.models.price_series import PriceSeries
 from finscope.persistence.repositories.instrument_repository import (
     InstrumentRepository,
 )
