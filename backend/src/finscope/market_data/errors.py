@@ -19,3 +19,13 @@ class PriceDataNotFoundError(MarketDataError):
             f"No price data for {instrument.symbol} ({instrument.id}) "
             f"between {start_date} and {end_date}"
         )
+
+
+class CalendarRangeError(MarketDataError):
+    def __init__(
+        self, start_date: date, end_date: date, first: date, last: date
+    ) -> None:
+        super().__init__(
+            f"{start_date}..{end_date} is outside the supported calendar "
+            f"range {first}..{last}"
+        )
