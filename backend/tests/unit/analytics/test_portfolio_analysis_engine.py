@@ -112,8 +112,8 @@ def test_uses_injected_valuation_service_with_default_performance_service(
 
     result = engine.analyze(portfolio, default_config, price_series)
 
-    assert result.metrics.total_return == pytest.approx(-0.25)
-    assert result.metrics.maximum_drawdown == pytest.approx(0.5)
+    assert result.metrics.total_return == pytest.approx(Decimal("-0.25"))
+    assert result.metrics.maximum_drawdown == pytest.approx(Decimal("0.5"))
 
 
 def test_uses_injected_performance_service_with_default_valuation_service(
@@ -178,14 +178,14 @@ def test_analyzes_portfolio_end_to_end(
         Decimal("1500"),
         Decimal("750"),
     ]
-    assert result.metrics.initial_value == pytest.approx(1000)
-    assert result.metrics.final_value == pytest.approx(750)
-    assert result.metrics.pnl == pytest.approx(-250)
-    assert result.metrics.total_return == pytest.approx(-0.25)
-    assert result.metrics.maximum_drawdown == pytest.approx(0.5)
+    assert result.metrics.initial_value == pytest.approx(Decimal("1000"))
+    assert result.metrics.final_value == pytest.approx(Decimal("750"))
+    assert result.metrics.pnl == pytest.approx(Decimal("-250"))
+    assert result.metrics.total_return == pytest.approx(Decimal("-0.25"))
+    assert result.metrics.maximum_drawdown == pytest.approx(Decimal("0.5"))
     assert result.metrics.maximum_drawdown_peak_date == jan(2)
     assert result.metrics.maximum_drawdown_trough_date == jan(3)
-    assert result.metrics.best_daily_return == pytest.approx(0.5)
+    assert result.metrics.best_daily_return == pytest.approx(Decimal("0.5"))
     assert result.metrics.best_daily_return_date == jan(2)
     assert result.metrics.highest_portfolio_value_date == jan(2)
     assert result.metrics.lowest_portfolio_value_date == jan(3)
@@ -241,17 +241,17 @@ def test_engine_is_reusable_across_calls(
         Decimal("1500"),
         Decimal("750"),
     ]
-    assert first_result.metrics.total_return == pytest.approx(-0.25)
-    assert first_result.metrics.maximum_drawdown == pytest.approx(0.5)
+    assert first_result.metrics.total_return == pytest.approx(Decimal("-0.25"))
+    assert first_result.metrics.maximum_drawdown == pytest.approx(Decimal("0.5"))
     assert [point.total_value for point in second_result.value_points] == [
         Decimal("1000"),
         Decimal("1100"),
         Decimal("1320"),
     ]
-    assert second_result.metrics.final_value == pytest.approx(1320)
-    assert second_result.metrics.pnl == pytest.approx(320)
-    assert second_result.metrics.total_return == pytest.approx(0.32)
-    assert second_result.metrics.best_daily_return == pytest.approx(0.2)
+    assert second_result.metrics.final_value == pytest.approx(Decimal("1320"))
+    assert second_result.metrics.pnl == pytest.approx(Decimal("320"))
+    assert second_result.metrics.total_return == pytest.approx(Decimal("0.32"))
+    assert second_result.metrics.best_daily_return == pytest.approx(Decimal("0.2"))
     assert second_result.metrics.best_daily_return_date == jan(3)
     assert second_result.metrics.highest_portfolio_value_date == jan(3)
     assert second_result.metrics.lowest_portfolio_value_date == jan(1)
