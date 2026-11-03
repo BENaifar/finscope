@@ -54,13 +54,14 @@ def make_config(
     start: date,
     end: date,
     portfolio_id: str = "test-portfolio",
+    config_id: str = "test-experiment",
 ) -> ExperimentConfig:
     return ExperimentConfig(
+        id=config_id,
         portfolio_id=portfolio_id,
         start_date=start,
         end_date=end,
     )
-
 
 def make_price_series(
     instrument: Instrument,
