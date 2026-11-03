@@ -1,5 +1,5 @@
 from sqlalchemy import select
-from sqlalchemy.orm import Session, joinedload, selectinload
+from sqlalchemy.orm import Session, selectinload
 
 from finscope.domain.portfolio import Portfolio
 from finscope.persistence.mappings.portfolio_mapper import to_domain, to_record
