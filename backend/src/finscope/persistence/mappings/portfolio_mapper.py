@@ -1,6 +1,8 @@
 from finscope.domain.portfolio import Portfolio
 from finscope.domain.portfolio_allocation import PortfolioAllocation
-from finscope.persistence.mappings.instrument_mapper import to_domain as instrument_to_domain
+from finscope.persistence.mappings.instrument_mapper import (
+    to_domain as instrument_to_domain,
+)
 from finscope.persistence.models.portfolio import PortfolioRecord
 from finscope.persistence.models.portfolio_allocation import PortfolioAllocationRecord
 
