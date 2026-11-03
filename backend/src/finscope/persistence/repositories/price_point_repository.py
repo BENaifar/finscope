@@ -54,3 +54,16 @@ class PricePointRepository:
             return None
 
         return to_domain_price_series(records, instrument)
+
+    def get_dates(
+        self, instrument: Instrument, start_date: date, end_date: date
+    ) -> frozenset[date]:
+        """Return the dates already stored for an instrument, inclusive range."""
+        stored_dates = self._session.scalars(
+            select(PricePointRecord.price_date).where(
+                PricePointRecord.instrument_id == instrument.id,
+                PricePointRecord.price_date >= start_date,
+                PricePointRecord.price_date <= end_date,
+            )
+        )
+        return frozenset(stored_dates)
