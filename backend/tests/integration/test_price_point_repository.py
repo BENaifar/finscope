@@ -225,3 +225,80 @@ def test_weekend_gap_is_not_filled_by_repository(session: Session) -> None:
     assert repository.get_series(
         instrument, date(2024, 1, 5), date(2024, 1, 8)
     ) == series
+
+def test_get_dates_returns_stored_dates_in_inclusive_range(
+    session: Session,
+) -> None:
+    instrument = _insert_instrument(session)
+    repository = PricePointRepository(session)
+    repository.upsert_series(
+        make_price_series(
+            instrument,
+            {
+                date(2024, 1, 2): "100",
+                date(2024, 1, 3): "101",
+                date(2024, 1, 4): "102",
+                date(2024, 1, 5): "103",
+            },
+        ),
+        "test-provider",
+        datetime(2024, 1, 9, tzinfo=UTC),
+    )
+
+    assert repository.get_dates(
+        instrument, date(2024, 1, 3), date(2024, 1, 4)
+    ) == frozenset({date(2024, 1, 3), date(2024, 1, 4)})
+
+
+def test_get_dates_returns_empty_set_when_nothing_is_stored(
+    session: Session,
+) -> None:
+    instrument = _insert_instrument(session)
+
+    assert PricePointRepository(session).get_dates(
+        instrument, date(2024, 1, 1), date(2024, 1, 31)
+    ) == frozenset()
+
+
+def test_get_dates_only_returns_dates_of_the_requested_instrument(
+    session: Session,
+) -> None:
+    instrument = _insert_instrument(session)
+    other = make_instrument("inst-b", symbol="BBB")
+    InstrumentRepository(session).add(other)
+    repository = PricePointRepository(session)
+    fetched_at = datetime(2024, 1, 9, tzinfo=UTC)
+    repository.upsert_series(
+        make_price_series(instrument, {date(2024, 1, 2): "100"}),
+        "test-provider",
+        fetched_at,
+    )
+    repository.upsert_series(
+        make_price_series(other, {date(2024, 1, 3): "50"}),
+        "test-provider",
+        fetched_at,
+    )
+
+    assert repository.get_dates(
+        instrument, date(2024, 1, 1), date(2024, 1, 31)
+    ) == frozenset({date(2024, 1, 2)})
+
+
+def test_get_dates_returns_plain_dates_and_does_not_fill_gaps(
+    session: Session,
+) -> None:
+    instrument = _insert_instrument(session)
+    repository = PricePointRepository(session)
+    repository.upsert_series(
+        make_price_series(
+            instrument,
+            {date(2024, 1, 2): "100", date(2024, 1, 5): "101"},
+        ),
+        "test-provider",
+        datetime(2024, 1, 9, tzinfo=UTC),
+    )
+
+    result = repository.get_dates(instrument, date(2024, 1, 2), date(2024, 1, 5))
+
+    assert result == frozenset({date(2024, 1, 2), date(2024, 1, 5)})
+    assert all(type(item) is date for item in result)
