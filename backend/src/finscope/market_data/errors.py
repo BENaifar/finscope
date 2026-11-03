@@ -21,6 +21,20 @@ class PriceDataNotFoundError(MarketDataError):
         )
 
 
+class IncompleteMarketDataError(MarketDataError):
+    def __init__(
+        self, instrument: Instrument, missing_dates: tuple[date, ...]
+    ) -> None:
+        self.instrument = instrument
+        self.missing_dates = missing_dates
+        shown = ", ".join(day.isoformat() for day in missing_dates[:5])
+        suffix = ", ..." if len(missing_dates) > 5 else ""
+        super().__init__(
+            f"Missing {len(missing_dates)} price date(s) for "
+            f"{instrument.symbol} ({instrument.id}): {shown}{suffix}"
+        )
+
+
 class CalendarRangeError(MarketDataError):
     def __init__(
         self, start_date: date, end_date: date, first: date, last: date
