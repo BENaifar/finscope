@@ -4,13 +4,17 @@ from datetime import date
 
 @dataclass(frozen=True)
 class ExperimentConfig:
+    id: str
     portfolio_id: str
     start_date: date
     end_date: date
     price_convention: str = field(default="adjusted_close")
 
     def __post_init__(self) -> None:
-        if not self.portfolio_id:
+        if not self.id.strip():
+            raise ValueError("id must be a non-empty string")
+
+        if not self.portfolio_id.strip():
             raise ValueError("portfolio cannot be empty")
 
         if self.start_date >= self.end_date:
